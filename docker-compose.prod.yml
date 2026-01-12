@@ -1,0 +1,12 @@
+services:
+  backend:
+    build:
+      context: .
+      target: prod
+    container_name: lemenu-backend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
