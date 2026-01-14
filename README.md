@@ -9,7 +9,19 @@
 
 ## Start the Project with Docker
 
-### Development environment
+ _NOTE_
+ Use `--build` when:
+ - you run the project for the first time,
+ - the `Dockerfile` or `docker-compose*.yml` build settings changed,
+ - dependencies changed (`package*.json`, lockfile),
+ - or the image should pick up updated base images.
+
+## First setup
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+```
+
+## Normal Start
 ```bash
 docker compose \
 -f docker-compose.yml \
@@ -22,37 +34,41 @@ up -d
 docker compose \
 -f docker-compose.yml \
 -f docker-compose.prod.yml \
-up -d
+up -d --build
 ```
 
+## Stop Docker
+```bash
+docker compose \
+-f docker-compose.yml \
+-f docker-compose.prod.yml \
+down
+```
 
-## npx migrations
-Due to strict file ownership and permission handling in our Docker setup,
-running Prisma migrations from the host will probably fail
-
-Always run migrations inside the backend container.
-
-
-### Run migrations inside the container
-
-Find the backend service (usually backend):
+## To quickly find into any container terminal
+Find the the you ned service (for example backend):
 ```bash
 docker compose ps
 ```
 
-Open a shell in the backend container:
+Open a shell in the specified container:
 ```bash
 docker compose exec backend sh
 ```
 
-Run the migration:
+## Prisma
+### Run migrations (creates/updates DB tables)
+This applies Prisma migrations to your Postgres database (generated from `schema.prisma`).
+
 ```bash
 npx prisma migrate dev
 ```
 
-All in one line:
+To generate the Prisma Client and models, run prisma generate
+_Note: Docker may already handle this automatically._
+
 ```bash
-docker compose exec backend npx prisma migrate dev
+npx prisma generate
 ```
 
 --------------------------------------------------------------------
