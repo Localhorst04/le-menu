@@ -1,5 +1,6 @@
 # --> base deps
 FROM node:20.19-bookworm-slim AS deps
+
 WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma
@@ -7,13 +8,20 @@ RUN npm ci && npx prisma generate
 
 # --> dev
 FROM node:20.19-bookworm-slim AS dev
+# Install dumb-init for proper signal handling
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends dumb-init openssl && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 ENV NODE_ENV=development
 
 COPY --from=deps /app/node_modules ./node_modules
-
+COPY --from=deps /app/generated ./generated
 COPY . .
+
 EXPOSE 3000
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["npm", "run", "start:dev"]
 
 # --> build

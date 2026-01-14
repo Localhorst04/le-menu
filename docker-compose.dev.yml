@@ -1,5 +1,6 @@
 services:
   backend:
+    restart: unless-stopped
     build:
       context: .
       target: dev
@@ -12,6 +13,7 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
+      - /app/generated
 
   pgadmin:
     image: dpage/pgadmin4:latest
