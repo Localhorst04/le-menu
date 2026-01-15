@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma';
+import { prisma } from './prismaclient';
 
 import type { User, Recipe, Ingredient, Tag } from '@prisma/client';
 
