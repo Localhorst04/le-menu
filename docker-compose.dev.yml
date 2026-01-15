@@ -13,7 +13,6 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
-      - /app/generated
 
   pgadmin:
     image: dpage/pgadmin4:latest

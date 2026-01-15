@@ -1,6 +1,6 @@
 import { prisma } from '../lib/prisma';
 
-import type { User, Recipe, Ingredient, Tag } from '../generated/prisma/client';
+import type { User, Recipe, Ingredient, Tag } from '@prisma/client';
 
 // Helpers: accept readonly arrays/tuples
 function pick<T>(arr: readonly T[]): T {

@@ -17,7 +17,6 @@ WORKDIR /app
 ENV NODE_ENV=development
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/generated ./generated
 COPY . .
 
 EXPOSE 3000
