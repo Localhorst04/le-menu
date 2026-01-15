@@ -1,26 +1,19 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
 
 datasource db {
   provider = "postgresql"
-}
-
-generator client {
-  provider     = "prisma-client"
-  output       = "../generated/prisma"
-  moduleFormat = "cjs"
 }
 
 model User {
   id            String       @id @default(uuid())
   email         String       @unique
   name          String
-  password_hash String
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  password_hash String
   recipes       Recipe[]
   recipe_like   RecipeLike[]
 }
@@ -28,11 +21,11 @@ model User {
 model Recipe {
   id                String             @id @default(uuid())
   author_id         String
-  user              User               @relation(fields: [author_id], references: [id], onDelete: Cascade)
   title             String
   description       String
   cover_image_url   String
   created_at        DateTime           @default(now())
+  user              User               @relation(fields: [author_id], references: [id], onDelete: Cascade)
   recipeIngredients RecipeIngredient[]
   recipeLikes       RecipeLike[]
   recipeTags        RecipeTag[]
@@ -47,10 +40,10 @@ model Ingredient {
 model RecipeIngredient {
   recipe_id     String
   ingredient_id String
-  recipe        Recipe     @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
-  ingredient    Ingredient @relation(fields: [ingredient_id], references: [id], onDelete: Cascade)
   amount        Int
   unit          String
+  ingredient    Ingredient @relation(fields: [ingredient_id], references: [id], onDelete: Cascade)
+  recipe        Recipe     @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
 
   @@id([recipe_id, ingredient_id])
 }
@@ -58,9 +51,9 @@ model RecipeIngredient {
 model RecipeLike {
   user_id    String
   recipe_id  String
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  recipe     Recipe   @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
   created_at DateTime @default(now())
+  recipe     Recipe   @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@id([user_id, recipe_id])
 }
@@ -74,9 +67,9 @@ model Tag {
 model RecipeTag {
   tag_id     String
   recipe_id  String
-  tag        Tag      @relation(fields: [tag_id], references: [id], onDelete: Cascade)
-  recipe     Recipe   @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
   created_at DateTime @default(now())
+  recipe     Recipe   @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tag_id], references: [id], onDelete: Cascade)
 
   @@id([tag_id, recipe_id])
 }
