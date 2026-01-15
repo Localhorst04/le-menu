@@ -73,8 +73,7 @@ _Note: Docker may already handle this automatically._
 npx prisma generate
 ```
 
-________________________________________
-
+## Debugging
 **Logs:** 
 Find running services
 ```bash
@@ -86,3 +85,7 @@ View logs
 ```bash
 docker logs NAME
 ```
+
+**SwaggerUI**
+To test APIs
+Available at: http://localhost:3000/docs
