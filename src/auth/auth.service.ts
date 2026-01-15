@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
@@ -12,6 +12,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  // Register
   async register(registerDto: RegisterDto) {
     // 10 = salt rounds
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -24,40 +25,39 @@ export class AuthService {
       },
     });
 
-    const payload = {
+    return {
       id: user.id,
       email: user.email,
       name: user.name,
       createdAt: user.createdAt,
     };
-
-    return payload;
   }
 
-  async login(loginDto: LoginDto) {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
+  // Login
+  async login(loginDto: LoginDto): Promise<{ access_token: string } | false> {
+    const valideUser = await this.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid Credentials');
-    }
+    if (!valideUser) return false;
 
-    return {
-      access_token: await this.jwtService.signAsync(user),
-    };
+    return { access_token: await this.jwtService.signAsync(valideUser) };
   }
 
-  private async validateUser(email: string, pass: string) {
+  private async validateUser(email: string, pass: string): Promise<{ sub: string, email: string, name: string } | false>{
     const user = await this.prisma.user.findUnique({
       where: { email: email },
     });
 
-    if (user) {
-      const isPasswordMatching = await bcrypt.compare(pass, user.password_hash);
-      if (isPasswordMatching) {
-        const result = { sub: user.id, email: user.email, name: user.name };
-        return result;
-      }
-      return null;
+    if (!user) return false;
+
+    const ok = await bcrypt.compare(pass, user.password_hash);
+
+    if (!ok) {
+      return false;
     }
+
+    return { sub: user.id, email: user.email, name: user.name };
   }
 }
