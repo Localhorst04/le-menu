@@ -73,6 +73,13 @@ _Note: Docker may already handle this automatically._
 npx prisma generate
 ```
 
+### Seed
+Populates the database with mock data for development and testing, as defined in `prisma/seed.ts`.
+
+```bash
+npx prisma db seed
+```
+
 ## Debugging
 **Logs:** 
 Find running services
