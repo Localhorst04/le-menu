@@ -4,14 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
-
-type UserPayload = {
-  sub: string;
-  email: string;
-  name: string;
-  createdAt?: Date;
-};
-
+import { UserPayload } from './auth.types';
 
 @Injectable()
 export class AuthService {
