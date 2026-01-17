@@ -14,9 +14,14 @@ export class AuthService {
   ) {}
 
   // Register
-  async register(registerDto: RegisterDto): Promise<UserPayload> {
+  async register(registerDto: RegisterDto): Promise<UserPayload | false> {
     // 10 = salt rounds
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    const userExists = await this.prisma.user.findUnique({
+      where: { email: registerDto.email },
+    });
+    if (userExists) return false;
+
     const user = await this.prisma.user.create({
       data: {
         email: registerDto.email,
