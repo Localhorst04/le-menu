@@ -5,6 +5,14 @@ import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
 
+type UserPayload = {
+  sub: string;
+  email: string;
+  name: string;
+  createdAt?: Date;
+};
+
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,10 +21,9 @@ export class AuthService {
   ) {}
 
   // Register
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto): Promise<UserPayload> {
     // 10 = salt rounds
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-
     const user = await this.prisma.user.create({
       data: {
         email: registerDto.email,
@@ -26,7 +33,7 @@ export class AuthService {
     });
 
     return {
-      id: user.id,
+      sub: user.id,
       email: user.email,
       name: user.name,
       createdAt: user.createdAt,
@@ -39,24 +46,22 @@ export class AuthService {
       loginDto.email,
       loginDto.password,
     );
-
     if (!valideUser) return false;
 
     return { access_token: await this.jwtService.signAsync(valideUser) };
   }
 
-  private async validateUser(email: string, pass: string): Promise<{ sub: string, email: string, name: string } | false>{
+  private async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<UserPayload | false> {
     const user = await this.prisma.user.findUnique({
       where: { email: email },
     });
-
     if (!user) return false;
 
     const ok = await bcrypt.compare(pass, user.password_hash);
-
-    if (!ok) {
-      return false;
-    }
+    if (!ok) return false;
 
     return { sub: user.id, email: user.email, name: user.name };
   }
