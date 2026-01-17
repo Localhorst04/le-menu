@@ -27,6 +27,6 @@ export class AuthController {
     const req = await this.authService.login(loginDto);
     if (req == false) throw new UnauthorizedException('Invalid credentials');
 
-    return { access_token: req };
+    return req;
   }
 }
