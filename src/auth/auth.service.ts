@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
-import { UserPayload } from './auth.types';
+import { LoginResult, RegisterResult, UserPayload } from './auth.types';
 
 @Injectable()
 export class AuthService {
@@ -14,39 +14,57 @@ export class AuthService {
   ) {}
 
   // Register
-  async register(registerDto: RegisterDto): Promise<UserPayload | false> {
-    const userExists = await this.prisma.user.findUnique({
-      where: { email: registerDto.email },
-    });
-    if (userExists) return false;
+  async register(dto: RegisterDto): Promise<RegisterResult> {
+    const userExists = await this.checkRegistered(dto.email);
+    if (userExists) return { ok: false, reason: 'CONFLICT' };
+
     const saltRounds: number = 10;
-    const hashedPassword = await bcrypt.hash(registerDto.password, saltRounds);
+    const hashedPassword = await bcrypt.hash(dto.password, saltRounds);
 
     const user = await this.prisma.user.create({
       data: {
-        email: registerDto.email,
-        name: registerDto.name,
+        email: dto.email,
+        name: dto.name,
         password_hash: hashedPassword,
       },
     });
+    if (!user) return { ok: false, reason: 'BAD' };
 
-    return {
+    const userPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
       createdAt: user.createdAt,
     };
+
+    return {
+      ok: true,
+      userPayload: userPayload,
+    };
   }
 
   // Login
-  async login(loginDto: LoginDto): Promise<{ access_token: string } | false> {
+  async login(loginDto: LoginDto): Promise<LoginResult> {
     const valideUser = await this.validateUser(
       loginDto.email,
       loginDto.password,
     );
-    if (!valideUser) return false;
+    if (!valideUser) return { ok: false, reason: 'UNAUTHORIZED' };
 
-    return { access_token: await this.jwtService.signAsync(valideUser) };
+    try {
+      const token = await this.jwtService.signAsync(valideUser);
+      return { ok: true, access_token: token };
+    } catch {
+      return { ok: false, reason: 'BAD' };
+    }
+  }
+
+  private async checkRegistered(dtoEmail: string): Promise<boolean> {
+    const registeredUser = await this.prisma.user.findUnique({
+      where: { email: dtoEmail },
+    });
+    if (registeredUser) return true;
+    return false;
   }
 
   private async validateUser(

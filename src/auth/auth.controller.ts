@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ConflictException,
   Controller,
@@ -11,6 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { RegisterResult } from './auth.types';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -18,18 +20,31 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
-    const req = await this.authService.register(registerDto);
-    if (req == false) throw new ConflictException();
-    return req;
+  async register(@Body() registerDto: RegisterDto): Promise<RegisterResult> {
+    const res = await this.authService.register(registerDto);
+    if (!res.ok) {
+      switch (res.reason) {
+        case 'CONFLICT':
+          throw new ConflictException();
+        case 'BAD':
+          throw new BadRequestException();
+      }
+    }
+    return res;
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const req = await this.authService.login(loginDto);
-    if (req == false) throw new UnauthorizedException('Invalid credentials');
-
+    if (!req.ok) {
+      switch (req.reason) {
+        case 'UNAUTHORIZED':
+          throw new UnauthorizedException();
+        case 'BAD':
+          throw new BadRequestException();
+      }
+    }
     return req;
   }
 }
