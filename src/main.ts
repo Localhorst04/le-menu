@@ -2,9 +2,18 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { AppModule } from './app.module';
 import { setupSwagger } from './swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   if (process.env.NODE_ENV !== 'production') {
     setupSwagger(app);

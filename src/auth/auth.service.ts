@@ -3,7 +3,7 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, User } from '@prisma/client';
 import { LoginResult, RegisterResult, UserPayload } from './auth.types';
 
 @Injectable()
@@ -12,7 +12,6 @@ export class AuthService {
     private readonly prisma: PrismaClient,
     private readonly jwtService: JwtService,
   ) {}
-
   // Register
   async register(dto: RegisterDto): Promise<RegisterResult> {
     const userExists = await this.checkRegistered(dto.email);
@@ -21,26 +20,36 @@ export class AuthService {
     const saltRounds: number = 10;
     const hashedPassword = await bcrypt.hash(dto.password, saltRounds);
 
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        name: dto.name,
-        password_hash: hashedPassword,
-      },
-    });
-    if (!user) return { ok: false, reason: 'BAD' };
+    let user: User | null = null;
+    try {
+      user = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          name: dto.name,
+          password_hash: hashedPassword,
+        },
+      });
+      if (!user) return { ok: false, reason: 'BAD' };
 
-    const userPayload = {
-      sub: user.id,
-      email: user.email,
-      name: user.name,
-      createdAt: user.createdAt,
-    };
-
-    return {
-      ok: true,
-      userPayload: userPayload,
-    };
+      const userPayload = {
+        sub: user.id,
+        email: user.email,
+        name: user.name,
+        createdAt: user.createdAt,
+      };
+      return {
+        ok: true,
+        userPayload: userPayload,
+      };
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
+      ) {
+        return { ok: false, reason: 'CONFLICT' };
+      }
+      return { ok: false, reason: 'FAILED', cause: err };
+    }
   }
 
   // Login

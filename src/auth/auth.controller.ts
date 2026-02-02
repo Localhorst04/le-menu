@@ -28,6 +28,8 @@ export class AuthController {
           throw new ConflictException();
         case 'BAD':
           throw new BadRequestException();
+        case 'FAILED':
+          throw res.cause;
       }
     }
     return res;
