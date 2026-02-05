@@ -32,7 +32,7 @@ export class AuthService {
       if (!user) return { ok: false, reason: 'BAD' };
 
       const userPayload = {
-        sub: user.id,
+        id: user.id,
         email: user.email,
         name: user.name,
         createdAt: user.createdAt,
@@ -88,6 +88,6 @@ export class AuthService {
     const ok = await bcrypt.compare(pass, user.password_hash);
     if (!ok) return false;
 
-    return { sub: user.id, email: user.email, name: user.name };
+    return { id: user.id, email: user.email, name: user.name };
   }
 }

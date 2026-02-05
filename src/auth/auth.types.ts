@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-export type JwtUser = { sub: string; email: string; name: string };
+export type JwtUser = { id: string; email: string; name: string };
 export type AuthRequest = Request & { user: JwtUser };
 
 export type RegisterFailReason = 'CONFLICT' | 'BAD' | 'FAILED';
@@ -15,7 +15,7 @@ export type LoginResult =
   | { ok: false; reason: LoginFailReason };
 
 export type UserPayload = {
-  sub: string;
+  id: string;
   email: string;
   name: string;
   createdAt?: Date;

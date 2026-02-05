@@ -15,7 +15,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@CurrentUser() jwtUser: JwtUser): Promise<UserDto> {
-    const user = await this.userService.getById(jwtUser.sub);
+    const user = await this.userService.getById(jwtUser.id);
     if (!user) {
       throw new NotFoundException('No user found');
     }
