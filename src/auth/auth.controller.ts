@@ -12,7 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { RegisterResult } from './auth.types';
+import { LoginResult, RegisterResult } from './auth.types';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -37,7 +37,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto): Promise<LoginResult> {
     const req = await this.authService.login(loginDto);
     if (!req.ok) {
       switch (req.reason) {
