@@ -4,6 +4,7 @@ FROM node:20.19-bookworm-slim AS deps
 WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma
+RUN npm i -g npm@11.7.0
 RUN npm ci && npx prisma generate
 
 # --> dev

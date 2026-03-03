@@ -35,7 +35,7 @@ async function main() {
   await prisma.ingredient.deleteMany();
   await prisma.user.deleteMany();
 
-  // USERS (no id/createdAt/updatedAt needed)
+  // USERS
   const usersData = [
     { email: 'horst@lemenu.local', name: 'Hors', password_hash: 'hash_demo_1' },
     { email: 'mia@lemenu.local', name: 'Mia', password_hash: 'hash_demo_2' },
