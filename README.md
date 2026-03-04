@@ -95,4 +95,4 @@ docker logs NAME
 
 **SwaggerUI**
 To test APIs
-Available at: http://localhost:3000/docs
+Available at: http://localhost:3000/api/docs
