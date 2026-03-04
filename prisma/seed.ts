@@ -90,7 +90,7 @@ async function main() {
     'Vegan',
     'Vegetarian',
     'Sweet',
-    'Halal'
+    'Halal',
   ] as const;
 
   const tags: Tag[] = [];
@@ -124,7 +124,8 @@ async function main() {
     {
       title: 'Crispy Roasted Potatoes',
       description: 'Golden roasted potatoes with olive oil and spices.',
-      cover_image_url: 'https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/roastpotatoes_92811_16x9.jpg',
+      cover_image_url:
+        'https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/roastpotatoes_92811_16x9.jpg',
     },
     {
       title: 'Mushroom Omelette',
