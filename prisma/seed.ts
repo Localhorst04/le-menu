@@ -85,16 +85,12 @@ async function main() {
 
   // TAGS
   const tagNames = [
-    'quick',
-    'vegetarian',
-    'high-protein',
-    'comfort-food',
-    'healthy',
-    'dessert',
-    'italian',
-    'asian',
-    'breakfast',
-    'meal-prep',
+    'Meat',
+    'Fish',
+    'Vegan',
+    'Vegetarian',
+    'Sweet',
+    'Halal',
   ] as const;
 
   const tags: Tag[] = [];
@@ -128,7 +124,8 @@ async function main() {
     {
       title: 'Crispy Roasted Potatoes',
       description: 'Golden roasted potatoes with olive oil and spices.',
-      cover_image_url: 'https://picsum.photos/seed/potatoes/900/600',
+      cover_image_url:
+        'https://ichef.bbci.co.uk/food/ic/food_16x9_1600/recipes/roastpotatoes_92811_16x9.jpg',
     },
     {
       title: 'Mushroom Omelette',
