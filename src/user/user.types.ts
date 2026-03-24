@@ -2,7 +2,7 @@ export type UserReturn = {
   id: string;
   email: string;
   name: string;
-  updated_at?: Date;
+  updatedAt?: Date;
 };
 
 export type UpdateNameFailReason = 'UNAUTHORIZED' | 'BAD';

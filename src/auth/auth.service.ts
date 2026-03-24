@@ -26,7 +26,7 @@ export class AuthService {
         data: {
           email: dto.email,
           name: dto.name,
-          password_hash: hashedPassword,
+          passwordHash: hashedPassword,
         },
       });
       if (!user) return { ok: false, reason: 'BAD' };
@@ -85,7 +85,7 @@ export class AuthService {
     });
     if (!user) return false;
 
-    const ok = await bcrypt.compare(pass, user.password_hash);
+    const ok = await bcrypt.compare(pass, user.passwordHash);
     if (!ok) return false;
 
     return { id: user.id, email: user.email, name: user.name };

@@ -15,7 +15,7 @@ export class UserService {
         email: true,
         name: true,
         createdAt: true,
-        updated_at: true,
+        updatedAt: true,
       },
     });
     if (!user) return null;

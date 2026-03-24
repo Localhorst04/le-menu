@@ -3,5 +3,5 @@ export class UserDto {
   email: string;
   name: string;
   createdAt: Date;
-  updated_at: Date;
+  updatedAt: Date;
 }

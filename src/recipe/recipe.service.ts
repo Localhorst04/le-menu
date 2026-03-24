@@ -7,9 +7,7 @@ import { PreviewRecipeDto } from './dto/preview-recipe.dto';
 export class RecipeService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async getAllRecipes(
-    userId?: string,
-  ): Promise<PreviewRecipeDto[] | null> {
+  async getAllRecipes(userId?: string): Promise<PreviewRecipeDto[] | null> {
     const recipes = await this.prisma.recipe.findMany({
       include: {
         recipeTags: {
@@ -20,7 +18,7 @@ export class RecipeService {
         recipeLikes: userId
           ? {
               where: {
-                user_id: userId,
+                userId: userId,
               },
               take: 1,
             }
@@ -36,7 +34,7 @@ export class RecipeService {
       id: recipe.id,
       name: recipe.title,
       tags: recipe.recipeTags.map((rt) => rt.tag.name),
-      picURL: recipe.cover_image_url,
+      picURL: recipe.coverImageUrl,
       isLiked: recipe.recipeLikes ? recipe.recipeLikes.length > 0 : false,
     }));
   }
@@ -63,7 +61,7 @@ export class RecipeService {
         recipeLikes: userId
           ? {
               where: {
-                user_id: userId,
+                userId: userId,
               },
               take: 1,
             }
@@ -79,7 +77,7 @@ export class RecipeService {
       id: recipe.id,
       name: recipe.title,
       tags: recipe.recipeTags.map((rt) => rt.tag.name),
-      picURL: recipe.cover_image_url,
+      picURL: recipe.coverImageUrl,
       isLiked: recipe.recipeLikes ? recipe.recipeLikes.length > 0 : false,
       ingredients: recipe.recipeIngredients.map((ing) => ({
         name: ing.ingredient.name,
