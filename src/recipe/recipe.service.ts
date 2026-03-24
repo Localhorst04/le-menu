@@ -1,12 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { RecipeDto } from './dto/recipe.dto';
+import { PreviewRecipeDto } from './dto/preview-recipe.dto';
 
 @Injectable()
 export class RecipeService {
   constructor(private readonly prisma: PrismaClient) {}
-  findAll() {
-    return `This action returns all recipe`;
+
+  async getAllRecipes(
+    userId?: string,
+  ): Promise<PreviewRecipeDto[] | null> {
+    const recipes = await this.prisma.recipe.findMany({
+      include: {
+        recipeTags: {
+          include: {
+            tag: true,
+          },
+        },
+        recipeLikes: userId
+          ? {
+              where: {
+                user_id: userId,
+              },
+              take: 1,
+            }
+          : false,
+      },
+    });
+
+    if (!recipes || recipes.length === 0) {
+      return null;
+    }
+
+    return recipes.map((recipe) => ({
+      id: recipe.id,
+      name: recipe.title,
+      tags: recipe.recipeTags.map((rt) => rt.tag.name),
+      picURL: recipe.cover_image_url,
+      isLiked: recipe.recipeLikes ? recipe.recipeLikes.length > 0 : false,
+    }));
   }
 
   async getRecipe(
